@@ -3,11 +3,11 @@
 
 const wb = window['wijmoBlazor'] = window['wijmoBlazor'] || {};
 
-// create and initialize a Wijmo control
+// create and initialize a wjcCore control
 wb.initControl = function (netRef, host, className, props, events) {
 
     // get control
-    let ctl = wijmo.Control.getControl(host);
+    let ctl = wjcCore.Control.getControl(host);
 
     // do this only once
     if (!ctl) {
@@ -20,7 +20,7 @@ wb.initControl = function (netRef, host, className, props, events) {
 
             // special case:
             // if this is a grid and it has columns, then autoGenerateColumns should default to false
-            if (ctl instanceof wijmo.grid.FlexGrid && ctl.columns.length) {
+            if (ctl instanceof wjcGrid.FlexGrid && ctl.columns.length) {
                 if (props.autoGenerateColumns == null) {
                     ctl.autoGenerateColumns = false;
                 }
@@ -30,7 +30,7 @@ wb.initControl = function (netRef, host, className, props, events) {
             if (props) {
                 for (let prop in props) {
                     if (prop === 'class') { // special case: set HTML className on host element
-                        wijmo.addClass(host, props[prop]);
+                        wjcCore.addClass(host, props[prop]);
                     } else {
                         let value = props[prop];
                         props[prop] = this.setPropObj(ctl, prop, value);
@@ -54,9 +54,9 @@ wb.initMarkupProperty = function (netRef, host, propName, className, props, even
     host.style.display = 'none';
 
     // find parent control
-    let ctlHost = wijmo.closest(host, '.wj-control');
-    let ctl = ctlHost ? wijmo.Control.getControl(ctlHost) : null;
-    wijmo.assert(ctl, 'can\'t find parent for this ' + className + '.');
+    let ctlHost = wjcCore.closest(host, '.wj-control');
+    let ctl = ctlHost ? wjcCore.Control.getControl(ctlHost) : null;
+    wjcCore.assert(ctl, 'can\'t find parent for this ' + className + '.');
 
     // handle extender pattern (e.g. FlexGridFilter(grid), ChartAnimator(chart), etc)
     let propObj = null;
@@ -66,17 +66,20 @@ wb.initMarkupProperty = function (netRef, host, propName, className, props, even
 
         // if the property is a collection, create an item and add to the collection
         let propVal = ctl[propName];
-        if (wijmo.isArray(propVal)) {
+        if (wjcCore.isArray(propVal)) {
             propObj = this.createObject(className);
             if (props) {
-                wijmo.copy(propObj, props);
+                //if (className === 'wjcGrid.Column' && host.innerHTML) {
+                //    props.cellTemplate = host.innerHTML;
+                //}
+                wjcCore.copy(propObj, props);
             }
             propVal.push(propObj);
-        } else if (wijmo.isObject(propVal)) { // if not, copy our properties to the object
+        } else if (wjcCore.isObject(propVal)) { // if not, copy our properties to the object
             propObj = propVal;
-            wijmo.copy(propObj, props);
+            wjcCore.copy(propObj, props);
         } else {
-            wijmo.assert(false, 'Cannot find property "' + propName + '" in control "' + className + '".');
+            wjcCore.assert(false, 'Cannot find property "' + propName + '" in control "' + className + '".');
         }
     }
 
@@ -96,11 +99,11 @@ wb.initTooltip = function (host, props, key) {
 
     // create tooltip
     if (!this.tooltip) {
-        this.tooltip = new wijmo.Tooltip();
+        this.tooltip = new wjcCore.Tooltip();
     }
 
     // set properties (will apply to all tooltips)
-    wijmo.copy(this.tooltip, props);
+    wjcCore.copy(this.tooltip, props);
 
     // add tooltip to the host element
     setTimeout(() => { // let the host's RenderFragment update first...
@@ -119,8 +122,8 @@ wb.initCollectionView = function (netRef, host, props, events) {
     host.style.display = 'none';
 
     // create the new collectionView
-    let view = new wijmo.collections.CollectionView();
-    wijmo.copy(view, props);
+    let view = new wjcCore.collections.CollectionView();
+    wjcCore.copy(view, props);
 
     // hook up events
     this.connectEventHandlers(netRef, view, events);
@@ -152,7 +155,7 @@ wb.getObjRef = function (key) {
 // dispose of an object
 wb.dispose = function (key) {
     //let obj = this.getObjRef(key);
-    //if (obj instanceof wijmo.Control) {
+    //if (obj instanceof wjcCore.Control) {
     //    obj.dispose(); // can't do this, causes crashes
     //}
     delete this.objMap[key];
@@ -171,7 +174,7 @@ wb.connectEventHandlers = function (netRef, obj, events) {
 
                 // cancel the event if the handler told us to
                 //console.log('event', event, 'returned', result);
-                if (result && e instanceof wijmo.CancelEventArgs) {
+                if (result && e instanceof wjcCore.CancelEventArgs) {
                     result = JSON.parse(result);
                     e.cancel = result.Cancel;
                 }
@@ -185,24 +188,24 @@ wb.createObject = function (className, ctorParam) {
     let obj = window;
     className.split('.').forEach(part => {
         obj = obj[part];
-        wijmo.assert(obj, 'Wijmo class not loaded: "' + className + '". Please see https://www.grapecity.com/wijmo/docs/GettingStarted/Referencing-Wijmo');
+        wjcCore.assert(obj, 'wjcCore class not loaded: "' + className + '".');
     });
     return new obj(ctorParam);
 }.bind(wb);
 
-// get a property from a Wijmo control
+// get a property from a wjcCore control
 wb.getProp = function (key, name) {
     let obj = this.getObjRef(key),
         value = obj ? obj[name] : null;
 
     // special cases: Date, CellRange, CellRange[]
-    if (wijmo.isDate(value)) {
+    if (wjcCore.isDate(value)) {
         return this.marshallOut(value);
     }
-    if (value instanceof wijmo.grid.CellRange) {
+    if (value instanceof wjcGrid.CellRange) {
         return this.marshallOut(value);
     }
-    if (wijmo.isArray(value) && value[0] instanceof wijmo.grid.CellRange) {
+    if (wjcCore.isArray(value) && value[0] instanceof wjcGrid.CellRange) {
         return value.map(rng => this.marshallOut(rng));
     }
 
@@ -210,7 +213,7 @@ wb.getProp = function (key, name) {
     return value;
 }.bind(wb);
 
-// set a property on a Wijmo control (direct assignment)
+// set a property on a wjcCore control (direct assignment)
 wb.setProp = function (key, name, value) {
     let obj = this.getObjRef(key);
     if (obj) {
@@ -231,27 +234,27 @@ wb.setPropObj = function (obj, name, value) {
     return value;
 }.bind(wb);
 
-// call a method on a Wijmo control
+// call a method on a wjcCore control
 wb.call = function (key, method, ...params) {
     let obj = this.getObjRef(key);
     if (obj) {
         let fn = obj[method];
-        if (wijmo.isFunction(fn)) {
+        if (wjcCore.isFunction(fn)) {
             return fn.apply(obj, ...params);
         }
     }
-    wijmo.assert(false, "Call to [" + method + "] failed.");
+    wjcCore.assert(false, "Call to [" + method + "] failed.");
 }.bind(wb);
 
 // show a popup dialog and invoke a callback when the dialog closes
 wb.showPopupWithCallback = function (netRef, key, modal) {
     let obj = this.getObjRef(key);
-    if (obj instanceof wjcInput.Popup) {
+    if (obj instanceof wjcCore.input.Popup) {
         obj.show(modal, () => {
             return netRef.invokeMethod('_PopupCallback', obj.dialogResult);
         });
     } else {
-        wijmo.assert(false, "Invalid host in call to Popup.show.");
+        wjcCore.assert(false, "Invalid host in call to Popup.show.");
     }
 }.bind(wb);
 
@@ -262,7 +265,7 @@ wb.rxDate = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:[\d.]+Z?$/;
 wb.marshallIn = function (name, val) {
 
     // resolve JS references
-    if (wijmo.isString(val) && val.indexOf(this.refPrefix) === 0) {
+    if (wjcCore.isString(val) && val.indexOf(this.refPrefix) === 0) {
         let ref = this.getObjRef(val);
         if (ref) {
             return ref;
@@ -270,14 +273,14 @@ wb.marshallIn = function (name, val) {
     }
 
     // convert {} into null
-    if (!wijmo.isPrimitive(val) && val) {
+    if (!wjcCore.isPrimitive(val) && val) {
         if (!Object.keys(val).length && val.constructor === Object) {
             return null;
         }
     }
 
     // convert strings into dates
-    if (wijmo.isString(val) && val.match(this.rxDate)) {
+    if (wjcCore.isString(val) && val.match(this.rxDate)) {
         val = new Date(val);
 
         // convert GMT to local
@@ -287,11 +290,11 @@ wb.marshallIn = function (name, val) {
     }
 
     // convert strings into dates within arrays
-    if (wijmo.isArray(val)) {
+    if (wjcCore.isArray(val)) {
         val.forEach(item => {
             for (let key in item) {
                 let val = item[key];
-                if (wijmo.isString(val) && val.match(this.rxDate)) {
+                if (wjcCore.isString(val) && val.match(this.rxDate)) {
                     item[key] = this.marshallIn(key, val);
                 }
             }
@@ -317,7 +320,7 @@ wb.marshallOut = function (val) {
     }
 
     // CellRange
-    if (val instanceof wijmo.grid.CellRange) {
+    if (val instanceof wjcGrid.CellRange) {
         return { // REVIEW: lowercase prop names when dealing with events
             row: val.row,
             col: val.col,
@@ -330,21 +333,21 @@ wb.marshallOut = function (val) {
     let obj = {};
     for (let k in val) {
         if (k[0] !== '_') { // skip internal stuff
-            let capName = k[0].toUpperCase() + k.substr(1);
+            let capName = k[0].toUpperCase() + k.substring(1);
             let value = val[k];
-            if (value instanceof wijmo.grid.CellRange) { // include CellRange objects
+            if (value instanceof wjcGrid.CellRange) { // include CellRange objects
                 obj[capName] = { // REVIEW: uppercase prop names when dealing with events
                     Row: value.row,
                     Col: value.col,
                     Row2: value.row2,
                     Col2: value.col2
                 };
-            } else if (wijmo.isPrimitive(val[k])) { // include primitive values
+            } else if (wjcCore.isPrimitive(val[k])) { // include primitive values
                 obj[capName] = val[k];
             }
         }
     }
 
     // done
-    return  obj;
+    return obj;
 }.bind(wb);
