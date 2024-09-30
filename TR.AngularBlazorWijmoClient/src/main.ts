@@ -6,7 +6,7 @@ import {
   SafDrawer, SafToolbar, SafCheckbox, SafListbox, SafCombobox, SafSelect, SafListboxOption,
   SafDialog, SafPagination, SafAvatar, SafBreadcrumb, SafBreadcrumbItem, SafFacetedFilter,
   SafFacetCategory, SafFacetItem, SafSrOnly, SafRadio, SafRadioGroup, SafTreeView, SafTreeItem,
-  SafSearchField, SafButtonGroup, SafNumberField, SafStepper, SafStep, SafAccordion, SafAccordionItem
+  SafSearchField, SafButtonGroup, SafNumberField, SafStepper, SafStep, SafAccordion, SafAccordionItem, SafStatus
 } from "@saffron/core-components";
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
@@ -73,5 +73,6 @@ SafButtonGroup();
 SafNumberField();
 SafStepper();
 SafStep();
+SafStatus();
 SafAccordion();
 SafAccordionItem();

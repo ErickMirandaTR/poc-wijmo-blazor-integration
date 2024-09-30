@@ -13,5 +13,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 
 builder.RootComponents.RegisterCustomElement<WijmoGridComponent>("wijmo-grid-component");
+builder.RootComponents.RegisterCustomElement<SmartSampleGrid>("smart-sample-grid");
 
 await builder.Build().RunAsync();
