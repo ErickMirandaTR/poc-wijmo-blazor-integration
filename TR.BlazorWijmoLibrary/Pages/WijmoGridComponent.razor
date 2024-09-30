@@ -1,0 +1,32 @@
+﻿@page "/wijmo-grid-component"
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<PageTitle>Wijmo Grid</PageTitle>
+<h1>Wijmo Grid Test tewsting update</h1>
+
+<div id="hostElement"></div>
+
+@code {
+    private IJSObjectReference? module;
+
+    [Parameter]
+    public bool ShowMarquee { get; set; } = false;
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", $"./Pages/WijmoGridComponent.razor.js?v={DateTime.Now.Ticks}");
+            await module.InvokeVoidAsync("initGrid", ShowMarquee);
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (module is not null)
+        {
+            await module.DisposeAsync();
+        }
+    }
+}

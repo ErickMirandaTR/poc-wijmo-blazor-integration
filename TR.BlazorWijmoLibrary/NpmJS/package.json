@@ -1,0 +1,40 @@
+{
+  "name": "blazor-wijmo-libary",
+  "version": "1.0.0",
+  "description": "Blazor libary with Wijmo integration",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "copy": "xcopy ..\\bin\\Release\\net8.0\\browser-wasm\\publish\\wwwroot\\ dist\\ /s /y"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "peerDependencies": {
+    "@grapecity/wijmo": "5.20231.x",
+    "@grapecity/wijmo.grid": "5.20231.x",
+    "@grapecity/wijmo.grid.filter": "^5.20231.x",
+    "@grapecity/wjcInput": "^5.20231.x",
+    "@grapecity/wijmo.grid.grouppanel": "5.20231.x"
+  },
+  "dependencies": {
+    "@saffron/core-components": "^2.15.0",
+    "@saffron/core-styles": "^2.3.2",
+    "css-loader": "^7.1.2",
+    "node-sass": "^9.0.0",
+    "raw-loader": "^4.0.2",
+    "sass": "^1.77.8",
+    "sass-loader": "^16.0.0",
+    "style-loader": "^4.0.0"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^12.0.2",
+    "file-loader": "^6.2.0",
+    "webpack": "^5.93.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "files": [
+    "./dist/wwwroot/**"
+  ]
+}

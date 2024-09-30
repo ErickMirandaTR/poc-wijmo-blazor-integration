@@ -1,0 +1,138 @@
+﻿@page "/smart-sample-grid"
+@using WJ;
+
+<h3>SmartSampleGrid</h3>
+
+<WJ.GroupPanel 
+    Placeholder="Drag Columns Here to Create Groups"
+    Grid="@grid" />
+
+<WJ.FlexGrid @ref="grid"
+             IsReadOnly="false"
+             ImeEnabled="true"
+             HeadersVisibility="WJ.HeadersVisibility.Column"
+             ChildItemsPath="projects"
+             SelectionMode="WJ.SelectionMode.MultiRange"
+             ItemsSource="@data">
+    @* <WJ.FlexGridFilter FilterApplied="@FilterApplied" /> *@
+    <WJ.Column Binding="name" Header="Name" />
+    <WJ.Column Binding="lastUpdated" Header="Last updated" />
+    <WJ.Column Binding="status" CellTemplate="@statusTemplate" Header="Status" />
+    <WJ.Column Binding="actions" Header="Actions" CellTemplate="@actionTemplate"></WJ.Column>
+</WJ.FlexGrid>
+
+@code {
+    WJ.FlexGrid grid;
+    List<SampleItem> data = new List<SampleItem>();
+    string statusTemplate = "<saf-status role='status' id='status-undefined' status='success' message='${text}'></saf-status>";
+    string actionTemplate = "<saf-button>Actions</saf-button>";
+
+    string StatusTemplateFunction(dynamic cellTemplateContext)
+    {
+        if(cellTemplateContext.value == "Completed")
+        {
+            return "<saf-status role='status' status='success' message='Completed'></saf-status>";
+        }
+        if (cellTemplateContext.value == "In progress")
+        {
+            return "<saf-status role='status' status='info' message='In progress'></saf-status>";
+        }
+
+        return ""; 
+    }
+
+    protected override void OnInitialized()
+    {
+        data.Add(new SampleItem()
+        {
+            Id = 1,
+            Name = "AR Workpaper",
+            LastUpdated = new DateTime(),
+            Status = "In Progress",
+            Projects = new List<SampleItem>()
+            {
+              {
+                  new SampleItem()
+                  {
+                    Id = 2,
+                    Name = "Gamut ledger",
+                    LastUpdated = new DateTime(),
+                    Projects = null,
+                    Actions = ""
+                  } 
+              },
+              {
+                  new SampleItem()
+                  {
+                    Id = 3,
+                    Name = "Bank statement",
+                    LastUpdated = new DateTime(),
+                    Projects = null,
+                    Actions = ""
+                  }
+              }
+            },
+            Actions = ""
+        });
+        data.Add(new SampleItem()
+            {
+                Id = 5,
+                Name = "AR Workpaper 2",
+                LastUpdated = new DateTime(),
+                Status = "Completed",
+                Projects = new List<SampleItem>()
+            {
+              {
+                  new SampleItem()
+                  {
+                    Id = 6,
+                    Name = "Gamut ledger",
+                    LastUpdated = new DateTime(),
+                    Projects = null,
+                    Actions = ""
+                  }
+              },
+              {
+                  new SampleItem()
+                  {
+                    Id = 7,
+                    Name = "Bank statement",
+                    LastUpdated = new DateTime(),
+                    Projects = null,
+                    Actions = ""
+                  }
+              }
+            },
+                Actions = ""
+            });
+        Task.Run(async () =>
+        {
+            await Task.Delay(50);
+            this.StateHasChanged();
+        });
+    }
+
+    class SampleItem
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public DateTime LastUpdated { get; set; }
+        public string? Status { get; set; }
+        public List<SampleItem>? Projects { get; set; }
+        public string Actions { get; set; }
+    }
+
+    // enum SampleStatus
+    // {
+    //     InProgress,
+    //     Completed,
+    //     Canceled
+    // }
+
+    // Dictionary<SampleStatus, string> SampleStatusDictionary = new Dictionary<SampleStatus, string>()
+    // {
+    //     {SampleStatus.InProgress, "In progress"},
+    //     {SampleStatus.Completed, "Completed"},
+    //     {SampleStatus.Canceled, "Canceled"}
+    // };
+}
