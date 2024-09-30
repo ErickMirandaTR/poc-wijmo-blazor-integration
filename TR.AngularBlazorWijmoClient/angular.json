@@ -53,6 +53,9 @@
             "styles": [
               "src/styles.scss",
               "node_modules/@grapecity/wijmo.styles/wijmo.css"
+            ],
+            "scripts": [
+              "node_modules/blazor-wijmo-libary/dist/wwwroot/js/wijmoBlazor.js"
             ]
           },
           "configurations": {
